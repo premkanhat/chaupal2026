@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Results - Business Plan Competition</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #141824;
+            --bg-card: #1a1f2e;
+            --accent-primary: #00d9ff;
+            --accent-secondary: #7000ff;
+            --accent-gold: #ffd700;
+            --accent-silver: #c0c0c0;
+            --accent-bronze: #cd7f32;
+            --text-primary: #ffffff;
+            --text-secondary: #8892b0;
+            --success: #00ff88;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 217, 255, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(112, 0, 255, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(255, 215, 0, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: slideDown 0.8s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header h1 {
+            font-size: 72px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00d9ff 0%, #7000ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+            letter-spacing: -2px;
+        }
+
+        .header .subtitle {
+            font-size: 28px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 60px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(0, 217, 255, 0.15);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+        }
+
+        .stat-card .label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .stat-card .value {
+            font-size: 48px;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-primary);
+        }
+
+        .leaderboard {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .leaderboard-item {
+            background: var(--bg-card);
+            border: 1px solid rgba(0, 217, 255, 0.15);
+            border-radius: 20px;
+            padding: 32px;
+            display: grid;
+            grid-template-columns: 80px 1fr auto;
+            gap: 32px;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: slideUp 0.6s ease backwards;
+        }
+
+        .leaderboard-item:nth-child(1) { animation-delay: 0.1s; }
+        .leaderboard-item:nth-child(2) { animation-delay: 0.2s; }
+        .leaderboard-item:nth-child(3) { animation-delay: 0.3s; }
+        .leaderboard-item:nth-child(4) { animation-delay: 0.4s; }
+        .leaderboard-item:nth-child(5) { animation-delay: 0.5s; }
+        .leaderboard-item:nth-child(6) { animation-delay: 0.6s; }
+        .leaderboard-item:nth-child(7) { animation-delay: 0.7s; }
+        .leaderboard-item:nth-child(8) { animation-delay: 0.8s; }
+        .leaderboard-item:nth-child(9) { animation-delay: 0.9s; }
+        .leaderboard-item:nth-child(10) { animation-delay: 1s; }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Top 3 highlighting */
+        .leaderboard-item.rank-1 {
+            border: 2px solid var(--accent-gold);
+            box-shadow: 0 20px 60px rgba(255, 215, 0, 0.2);
+            transform: scale(1.02);
+        }
+
+        .leaderboard-item.rank-1::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: var(--accent-gold);
+        }
+
+        .leaderboard-item.rank-2 {
+            border: 2px solid var(--accent-silver);
+            box-shadow: 0 15px 45px rgba(192, 192, 192, 0.15);
+        }
+
+        .leaderboard-item.rank-2::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent-silver);
+        }
+
+        .leaderboard-item.rank-3 {
+            border: 2px solid var(--accent-bronze);
+            box-shadow: 0 10px 30px rgba(205, 127, 50, 0.15);
+        }
+
+        .leaderboard-item.rank-3::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent-bronze);
+        }
+
+        .rank {
+            font-size: 56px;
+            font-weight: 900;
+            font-family: 'JetBrains Mono', monospace;
+            text-align: center;
+        }
+
+        .rank-1 .rank { 
+            color: var(--accent-gold);
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        .rank-2 .rank { 
+            color: var(--accent-silver);
+            text-shadow: 0 0 15px rgba(192, 192, 192, 0.4);
+        }
+        .rank-3 .rank { 
+            color: var(--accent-bronze);
+            text-shadow: 0 0 15px rgba(205, 127, 50, 0.4);
+        }
+
+        .info {
+            flex: 1;
+        }
+
+        .business-name {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .team-name {
+            font-size: 20px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .investment-display {
+            text-align: right;
+        }
+
+        .investment-amount {
+            font-size: 52px;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-primary);
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .rank-1 .investment-amount {
+            color: var(--accent-gold);
+        }
+
+        .rank-2 .investment-amount {
+            color: var(--accent-silver);
+        }
+
+        .rank-3 .investment-amount {
+            color: var(--accent-bronze);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 12px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 4px;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .rank-1 .progress-fill {
+            background: linear-gradient(90deg, var(--accent-gold), #ffed4e);
+        }
+
+        .rank-2 .progress-fill {
+            background: linear-gradient(90deg, var(--accent-silver), #e8e8e8);
+        }
+
+        .rank-3 .progress-fill {
+            background: linear-gradient(90deg, var(--accent-bronze), #ff8c42);
+        }
+
+        .last-updated {
+            text-align: center;
+            margin-top: 40px;
+            color: var(--text-secondary);
+            font-size: 18px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 100px 20px;
+            font-size: 32px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 100px 20px;
+        }
+
+        .empty-state h2 {
+            font-size: 48px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .empty-state p {
+            font-size: 24px;
+            color: var(--text-secondary);
+        }
+
+        @media (max-width: 1200px) {
+            .header h1 {
+                font-size: 56px;
+            }
+
+            .leaderboard-item {
+                grid-template-columns: 60px 1fr auto;
+                gap: 24px;
+                padding: 24px;
+            }
+
+            .rank {
+                font-size: 42px;
+            }
+
+            .business-name {
+                font-size: 24px;
+            }
+
+            .team-name {
+                font-size: 16px;
+            }
+
+            .investment-amount {
+                font-size: 36px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 40px;
+            }
+
+            .header .subtitle {
+                font-size: 20px;
+            }
+
+            .leaderboard-item {
+                grid-template-columns: 1fr;
+                gap: 16px;
+                text-align: center;
+            }
+
+            .investment-display {
+                text-align: center;
+            }
+
+            .stat-card .value {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Live Leaderboard</h1>
+            <div class="subtitle">Business Plan Competition 2026</div>
+        </div>
+
+        <div class="stats-bar" id="statsBar">
+            <div class="stat-card">
+                <div class="label">Total Investment</div>
+                <div class="value" id="totalInvestment">₹0 Cr</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Students Voted</div>
+                <div class="value" id="studentsVoted">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Active Ideas</div>
+                <div class="value" id="activeIdeas">10</div>
+            </div>
+        </div>
+
+        <div id="leaderboardContainer">
+            <div class="loading">Loading live results...</div>
+        </div>
+
+        <div class="last-updated">
+            <span id="lastUpdated">Last updated: --:--:--</span>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        // Replace with your Firebase config
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            databaseURL: "YOUR_DATABASE_URL",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        function formatCurrency(amount) {
+            return `₹${amount.toFixed(2)} Cr`;
+        }
+
+        function updateLeaderboard() {
+            const businessIdeasRef = ref(database, 'businessIdeas');
+            const studentsRef = ref(database, 'students');
+
+            onValue(businessIdeasRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    const ideas = Object.keys(data).map(key => ({
+                        id: key,
+                        ...data[key],
+                        totalInvestment: data[key].totalInvestment || 0
+                    }));
+
+                    // Sort by total investment
+                    ideas.sort((a, b) => b.totalInvestment - a.totalInvestment);
+
+                    // Calculate max investment for progress bars
+                    const maxInvestment = ideas[0]?.totalInvestment || 1;
+
+                    // Calculate total investment
+                    const totalInvestment = ideas.reduce((sum, idea) => sum + idea.totalInvestment, 0);
+                    document.getElementById('totalInvestment').textContent = formatCurrency(totalInvestment);
+                    document.getElementById('activeIdeas').textContent = ideas.length;
+
+                    // Render leaderboard
+                    renderLeaderboard(ideas, maxInvestment);
+                } else {
+                    showEmptyState();
+                }
+
+                updateTimestamp();
+            });
+
+            // Count students who have voted
+            onValue(studentsRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    const students = Object.values(snapshot.val());
+                    const votedCount = students.filter(s => 
+                        s.investments && Object.keys(s.investments).length > 0
+                    ).length;
+                    document.getElementById('studentsVoted').textContent = votedCount;
+                }
+            });
+        }
+
+        function renderLeaderboard(ideas, maxInvestment) {
+            const container = document.getElementById('leaderboardContainer');
+            
+            if (ideas.length === 0) {
+                showEmptyState();
+                return;
+            }
+
+            const html = `
+                <div class="leaderboard">
+                    ${ideas.map((idea, index) => {
+                        const rank = index + 1;
+                        const percentage = (idea.totalInvestment / maxInvestment) * 100;
+                        const rankClass = rank <= 3 ? `rank-${rank}` : '';
+                        
+                        return `
+                            <div class="leaderboard-item ${rankClass}">
+                                <div class="rank">#${rank}</div>
+                                <div class="info">
+                                    <div class="business-name">${idea.name || `Business Idea ${idea.id}`}</div>
+                                    <div class="team-name">${idea.team || 'Team Name'}</div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: ${percentage}%"></div>
+                                    </div>
+                                </div>
+                                <div class="investment-display">
+                                    <div class="investment-amount">${formatCurrency(idea.totalInvestment)}</div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        function showEmptyState() {
+            const container = document.getElementById('leaderboardContainer');
+            container.innerHTML = `
+                <div class="empty-state">
+                    <h2>No Investments Yet</h2>
+                    <p>Waiting for students to start investing...</p>
+                </div>
+            `;
+        }
+
+        function updateTimestamp() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-IN', { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit' 
+            });
+            document.getElementById('lastUpdated').textContent = `Last updated: ${timeString}`;
+        }
+
+        // Start listening for updates
+        updateLeaderboard();
+
+        // Update timestamp every second
+        setInterval(updateTimestamp, 1000);
+    </script>
+</body>
+</html>

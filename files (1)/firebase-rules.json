@@ -1,0 +1,42 @@
+{
+  "rules": {
+    "students": {
+      ".read": true,
+      "$studentId": {
+        ".write": "!data.exists() || data.child('id').val() === $studentId",
+        ".validate": "newData.hasChildren(['id', 'totalCapital', 'remainingBalance']) && newData.child('remainingBalance').val() >= 0 && newData.child('remainingBalance').val() <= newData.child('totalCapital').val()",
+        "id": {
+          ".validate": "newData.val() === $studentId"
+        },
+        "totalCapital": {
+          ".validate": "newData.isNumber() && newData.val() === 10"
+        },
+        "remainingBalance": {
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        },
+        "investments": {
+          "$investmentId": {
+            ".validate": "newData.hasChildren(['businessId', 'amount', 'timestamp']) && newData.child('amount').val() > 0"
+          }
+        }
+      }
+    },
+    "businessIdeas": {
+      ".read": true,
+      "$businessId": {
+        ".write": true,
+        ".validate": "newData.hasChildren(['name', 'team', 'totalInvestment'])",
+        "totalInvestment": {
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        }
+      }
+    },
+    "votingStatus": {
+      ".read": true,
+      "active": {
+        ".write": true,
+        ".validate": "newData.isBoolean()"
+      }
+    }
+  }
+}

@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Business Plan Competition</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #141824;
+            --bg-card: #1a1f2e;
+            --accent-primary: #00d9ff;
+            --accent-secondary: #7000ff;
+            --text-primary: #ffffff;
+            --text-secondary: #8892b0;
+            --success: #00ff88;
+            --error: #ff3366;
+            --warning: #ffaa00;
+            --border: rgba(0, 217, 255, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 217, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(112, 0, 255, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Login Screen */
+        .login-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .login-screen.hidden {
+            display: none;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 450px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 50px 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo h1 {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d9ff 0%, #7000ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .logo p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* Admin Panel */
+        .admin-panel {
+            display: none;
+        }
+
+        .admin-panel.active {
+            display: block;
+        }
+
+        .header {
+            margin-bottom: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 36px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d9ff 0%, #7000ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input[type="password"] {
+            width: 100%;
+            padding: 16px 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.1);
+        }
+
+        .btn {
+            padding: 16px 32px;
+            background: linear-gradient(135deg, #00d9ff 0%, #7000ff 100%);
+            border: none;
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 217, 255, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn.btn-full {
+            width: 100%;
+        }
+
+        .btn.btn-success {
+            background: var(--success);
+        }
+
+        .btn.btn-error {
+            background: var(--error);
+        }
+
+        .btn.btn-warning {
+            background: var(--warning);
+        }
+
+        .btn.btn-secondary {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+        }
+
+        .stat-card h3 {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .stat-card .value {
+            font-size: 36px;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-primary);
+        }
+
+        .control-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 30px;
+        }
+
+        .control-section h2 {
+            font-size: 24px;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+        }
+
+        .control-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-indicator.active {
+            background: rgba(0, 255, 136, 0.1);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .status-indicator.inactive {
+            background: rgba(255, 51, 102, 0.1);
+            color: var(--error);
+            border: 1px solid var(--error);
+        }
+
+        .status-indicator::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        .status-indicator.active::before {
+            background: var(--success);
+        }
+
+        .status-indicator.inactive::before {
+            background: var(--error);
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .data-table {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+        }
+
+        .data-table h2 {
+            font-size: 24px;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 12px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 16px 12px;
+            border-bottom: 1px solid rgba(0, 217, 255, 0.05);
+            color: var(--text-primary);
+        }
+
+        tr:hover {
+            background: rgba(0, 217, 255, 0.03);
+        }
+
+        .message {
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            animation: slideIn 0.3s ease;
+        }
+
+        .message.success {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+
+        .message.error {
+            background: rgba(255, 51, 102, 0.1);
+            border: 1px solid var(--error);
+            color: var(--error);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-content h3 {
+            font-size: 24px;
+            margin-bottom: 16px;
+        }
+
+        .modal-content p {
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+
+            .control-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-box">
+            <div class="logo">
+                <h1>Admin Panel</h1>
+                <p>Business Plan Competition 2026</p>
+            </div>
+            <form id="adminLoginForm">
+                <div class="input-group">
+                    <label for="adminPassword">Admin Password</label>
+                    <input type="password" id="adminPassword" placeholder="Enter admin password" required>
+                </div>
+                <button type="submit" class="btn btn-full">Access Panel</button>
+            </form>
+            <div id="loginMessage"></div>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div class="container">
+        <div class="admin-panel" id="adminPanel">
+            <div class="header">
+                <h1>Admin Control Panel</h1>
+                <button class="btn btn-secondary" id="logoutBtn">Logout</button>
+            </div>
+
+            <div id="messageContainer"></div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Voting Status</h3>
+                    <div id="votingStatus"></div>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Investment</h3>
+                    <div class="value" id="totalInvestment">₹0 Cr</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Students Voted</h3>
+                    <div class="value" id="studentsVoted">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Students</h3>
+                    <div class="value" id="totalStudents">0</div>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <h2>Voting Controls</h2>
+                <div class="control-buttons">
+                    <button class="btn btn-success" id="startVotingBtn">Start Voting</button>
+                    <button class="btn btn-error" id="stopVotingBtn">Stop Voting</button>
+                    <button class="btn btn-warning" id="resetDataBtn">Reset All Data</button>
+                    <button class="btn" id="exportBtn">Export to CSV</button>
+                </div>
+            </div>
+
+            <div class="data-table">
+                <h2>Business Ideas Rankings</h2>
+                <div style="overflow-x: auto;">
+                    <table id="businessTable">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Business Idea</th>
+                                <th>Team Name</th>
+                                <th>Total Investment</th>
+                                <th>Investors</th>
+                            </tr>
+                        </thead>
+                        <tbody id="businessTableBody">
+                            <tr><td colspan="5" style="text-align: center; color: var(--text-secondary);">Loading data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="data-table">
+                <h2>Student Voting Details</h2>
+                <div style="overflow-x: auto;">
+                    <table id="studentTable">
+                        <thead>
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Remaining Balance</th>
+                                <th>Investments Made</th>
+                                <th>Last Updated</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentTableBody">
+                            <tr><td colspan="4" style="text-align: center; color: var(--text-secondary);">Loading data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal" id="confirmModal">
+        <div class="modal-content">
+            <h3 id="modalTitle">Confirm Action</h3>
+            <p id="modalMessage">Are you sure you want to proceed?</p>
+            <div class="modal-buttons">
+                <button class="btn btn-error" id="confirmBtn">Confirm</button>
+                <button class="btn btn-secondary" id="cancelBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, set, get, onValue, remove } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        // Replace with your Firebase config
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            databaseURL: "YOUR_DATABASE_URL",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Admin password (In production, use proper authentication)
+        const ADMIN_PASSWORD = "admin123"; // Change this!
+
+        let confirmCallback = null;
+
+        // Login handling
+        document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const password = document.getElementById('adminPassword').value;
+
+            if (password === ADMIN_PASSWORD) {
+                sessionStorage.setItem('adminAuth', 'true');
+                showAdminPanel();
+            } else {
+                showMessage('loginMessage', 'Invalid password', 'error');
+            }
+        });
+
+        function showAdminPanel() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('adminPanel').classList.add('active');
+            loadDashboard();
+        }
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            sessionStorage.removeItem('adminAuth');
+            document.getElementById('adminPanel').classList.remove('active');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('adminPassword').value = '';
+        });
+
+        // Control buttons
+        document.getElementById('startVotingBtn').addEventListener('click', async () => {
+            try {
+                await set(ref(database, 'votingStatus/active'), true);
+                showMessage('messageContainer', 'Voting started successfully!', 'success');
+            } catch (error) {
+                showMessage('messageContainer', 'Error starting voting', 'error');
+            }
+        });
+
+        document.getElementById('stopVotingBtn').addEventListener('click', async () => {
+            try {
+                await set(ref(database, 'votingStatus/active'), false);
+                showMessage('messageContainer', 'Voting stopped successfully!', 'success');
+            } catch (error) {
+                showMessage('messageContainer', 'Error stopping voting', 'error');
+            }
+        });
+
+        document.getElementById('resetDataBtn').addEventListener('click', () => {
+            showConfirmModal(
+                'Reset All Data',
+                'This will permanently delete all student votes and investment data. This action cannot be undone. Are you sure?',
+                async () => {
+                    try {
+                        await remove(ref(database, 'students'));
+                        await remove(ref(database, 'businessIdeas'));
+                        await set(ref(database, 'votingStatus/active'), false);
+                        showMessage('messageContainer', 'All data has been reset!', 'success');
+                    } catch (error) {
+                        showMessage('messageContainer', 'Error resetting data', 'error');
+                    }
+                }
+            );
+        });
+
+        document.getElementById('exportBtn').addEventListener('click', async () => {
+            try {
+                const businessSnapshot = await get(ref(database, 'businessIdeas'));
+                const studentSnapshot = await get(ref(database, 'students'));
+
+                let csvContent = "data:text/csv;charset=utf-8,";
+                
+                // Business Ideas CSV
+                csvContent += "Business Ideas Report\n";
+                csvContent += "Rank,Business Idea,Team,Total Investment (Cr),Number of Investors\n";
+
+                if (businessSnapshot.exists()) {
+                    const ideas = Object.values(businessSnapshot.val());
+                    ideas.sort((a, b) => (b.totalInvestment || 0) - (a.totalInvestment || 0));
+                    
+                    ideas.forEach((idea, index) => {
+                        csvContent += `${index + 1},${idea.name},${idea.team},${(idea.totalInvestment || 0).toFixed(2)},${idea.investors || 0}\n`;
+                    });
+                }
+
+                csvContent += "\n\nStudent Voting Details\n";
+                csvContent += "Student ID,Total Capital (Cr),Remaining Balance (Cr),Investments Count\n";
+
+                if (studentSnapshot.exists()) {
+                    Object.values(studentSnapshot.val()).forEach(student => {
+                        const investmentCount = student.investments ? Object.keys(student.investments).length : 0;
+                        csvContent += `${student.id},${student.totalCapital},${student.remainingBalance.toFixed(2)},${investmentCount}\n`;
+                    });
+                }
+
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", `voting_results_${new Date().toISOString().split('T')[0]}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                showMessage('messageContainer', 'Data exported successfully!', 'success');
+            } catch (error) {
+                showMessage('messageContainer', 'Error exporting data', 'error');
+            }
+        });
+
+        // Load dashboard data
+        function loadDashboard() {
+            // Voting status
+            onValue(ref(database, 'votingStatus/active'), (snapshot) => {
+                const isActive = snapshot.exists() && snapshot.val();
+                const statusDiv = document.getElementById('votingStatus');
+                statusDiv.innerHTML = `<div class="status-indicator ${isActive ? 'active' : 'inactive'}">${isActive ? 'Active' : 'Inactive'}</div>`;
+            });
+
+            // Business ideas
+            onValue(ref(database, 'businessIdeas'), (snapshot) => {
+                if (snapshot.exists()) {
+                    const ideas = Object.values(snapshot.val());
+                    ideas.sort((a, b) => (b.totalInvestment || 0) - (a.totalInvestment || 0));
+
+                    const totalInvestment = ideas.reduce((sum, idea) => sum + (idea.totalInvestment || 0), 0);
+                    document.getElementById('totalInvestment').textContent = `₹${totalInvestment.toFixed(2)} Cr`;
+
+                    const tbody = document.getElementById('businessTableBody');
+                    tbody.innerHTML = ideas.map((idea, index) => `
+                        <tr>
+                            <td>#${index + 1}</td>
+                            <td>${idea.name || 'N/A'}</td>
+                            <td>${idea.team || 'N/A'}</td>
+                            <td>₹${(idea.totalInvestment || 0).toFixed(2)} Cr</td>
+                            <td>${idea.investors || 0}</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    document.getElementById('totalInvestment').textContent = '₹0 Cr';
+                    document.getElementById('businessTableBody').innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-secondary);">No data available</td></tr>';
+                }
+            });
+
+            // Students
+            onValue(ref(database, 'students'), (snapshot) => {
+                if (snapshot.exists()) {
+                    const students = Object.values(snapshot.val());
+                    const votedStudents = students.filter(s => s.investments && Object.keys(s.investments).length > 0);
+
+                    document.getElementById('totalStudents').textContent = students.length;
+                    document.getElementById('studentsVoted').textContent = votedStudents.length;
+
+                    const tbody = document.getElementById('studentTableBody');
+                    tbody.innerHTML = students.map(student => {
+                        const investmentCount = student.investments ? Object.keys(student.investments).length : 0;
+                        const lastUpdated = student.lastUpdated ? new Date(student.lastUpdated).toLocaleString('en-IN') : 'Never';
+                        
+                        return `
+                            <tr>
+                                <td>${student.id}</td>
+                                <td>₹${student.remainingBalance.toFixed(2)} Cr</td>
+                                <td>${investmentCount}</td>
+                                <td style="font-size: 12px;">${lastUpdated}</td>
+                            </tr>
+                        `;
+                    }).join('');
+                } else {
+                    document.getElementById('totalStudents').textContent = '0';
+                    document.getElementById('studentsVoted').textContent = '0';
+                    document.getElementById('studentTableBody').innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-secondary);">No students registered</td></tr>';
+                }
+            });
+        }
+
+        function showMessage(containerId, message, type) {
+            const container = document.getElementById(containerId);
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = message;
+            container.innerHTML = '';
+            container.appendChild(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 5000);
+        }
+
+        function showConfirmModal(title, message, callback) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalMessage').textContent = message;
+            document.getElementById('confirmModal').classList.add('active');
+            confirmCallback = callback;
+        }
+
+        document.getElementById('confirmBtn').addEventListener('click', () => {
+            if (confirmCallback) {
+                confirmCallback();
+                confirmCallback = null;
+            }
+            document.getElementById('confirmModal').classList.remove('active');
+        });
+
+        document.getElementById('cancelBtn').addEventListener('click', () => {
+            confirmCallback = null;
+            document.getElementById('confirmModal').classList.remove('active');
+        });
+
+        // Auto-login if already authenticated
+        if (sessionStorage.getItem('adminAuth') === 'true') {
+            showAdminPanel();
+        }
+    </script>
+</body>
+</html>

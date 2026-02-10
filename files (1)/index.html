@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investment Voting - Business Plan Competition</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #141824;
+            --bg-card: #1a1f2e;
+            --accent-primary: #00d9ff;
+            --accent-secondary: #7000ff;
+            --accent-gradient: linear-gradient(135deg, #00d9ff 0%, #7000ff 100%);
+            --text-primary: #ffffff;
+            --text-secondary: #8892b0;
+            --success: #00ff88;
+            --error: #ff3366;
+            --warning: #ffaa00;
+            --border: rgba(0, 217, 255, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 217, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(112, 0, 255, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Login Screen */
+        .login-screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .login-screen.hidden {
+            display: none;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 400px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo h1 {
+            font-size: 28px;
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .logo p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 16px 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            transition: all 0.3s ease;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 18px;
+            background: var(--accent-gradient);
+            border: none;
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 217, 255, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Voting Screen */
+        .voting-screen {
+            display: none;
+            flex: 1;
+            padding: 20px 0;
+        }
+
+        .voting-screen.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            margin-bottom: 30px;
+        }
+
+        .welcome {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .user-id {
+            font-size: 24px;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .capital-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .capital-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--accent-gradient);
+        }
+
+        .capital-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .capital-item h3 {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .capital-item .amount {
+            font-size: 28px;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .capital-item .amount.remaining {
+            color: var(--accent-primary);
+        }
+
+        .capital-item .amount.invested {
+            color: var(--text-primary);
+        }
+
+        .investment-form {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 30px;
+        }
+
+        .form-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+        }
+
+        .investments-list {
+            margin-bottom: 30px;
+        }
+
+        .investments-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        .investment-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .investment-item .idea-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .investment-item .amount {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-primary);
+            font-weight: 600;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+
+        .message {
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            animation: slideIn 0.3s ease;
+        }
+
+        .message.success {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+
+        .message.error {
+            background: rgba(255, 51, 102, 0.1);
+            border: 1px solid var(--error);
+            color: var(--error);
+        }
+
+        .logout-btn {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 12px 24px;
+            margin-top: 20px;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 16px;
+            }
+
+            .capital-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .capital-item .amount {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Login Screen -->
+        <div class="login-screen" id="loginScreen">
+            <div class="login-box">
+                <div class="logo">
+                    <h1>Investment Portal</h1>
+                    <p>Business Plan Competition 2026</p>
+                </div>
+                <form id="loginForm">
+                    <div class="input-group">
+                        <label for="studentId">Student Roll Number</label>
+                        <input type="text" id="studentId" placeholder="Enter your roll number" required autocomplete="off">
+                    </div>
+                    <button type="submit" class="btn" id="loginBtn">Enter Voting Arena</button>
+                </form>
+                <div id="loginMessage"></div>
+            </div>
+        </div>
+
+        <!-- Voting Screen -->
+        <div class="voting-screen" id="votingScreen">
+            <div class="header">
+                <div class="welcome">Welcome Back</div>
+                <div class="user-id" id="displayStudentId"></div>
+            </div>
+
+            <div class="capital-card">
+                <div class="capital-grid">
+                    <div class="capital-item">
+                        <h3>Total Capital</h3>
+                        <div class="amount">₹10 Cr</div>
+                    </div>
+                    <div class="capital-item">
+                        <h3>Remaining</h3>
+                        <div class="amount remaining" id="remainingBalance">₹10 Cr</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="investment-form">
+                <h2 class="form-title">Make Investment</h2>
+                <div id="messageContainer"></div>
+                <form id="investmentForm">
+                    <div class="input-group">
+                        <label for="businessIdea">Select Business Idea</label>
+                        <select id="businessIdea" required>
+                            <option value="">Choose an idea...</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="investmentAmount">Investment Amount (₹ Crore)</label>
+                        <input type="number" id="investmentAmount" placeholder="0.00" step="0.01" min="0.01" required>
+                    </div>
+                    <button type="submit" class="btn" id="investBtn">Invest Now</button>
+                </form>
+            </div>
+
+            <div class="investments-list">
+                <h2 class="investments-title">Your Investments</h2>
+                <div id="investmentsList"></div>
+            </div>
+
+            <button class="btn logout-btn" id="logoutBtn">Logout</button>
+        </div>
+    </div>
+
+    <script type="module">
+        // Firebase configuration
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, set, get, update, onValue, increment } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        // Replace with your Firebase config
+        // IMPORTANT: Replace these with your actual Firebase credentials
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            databaseURL: "YOUR_DATABASE_URL",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        let app, database;
+        
+        // Initialize Firebase
+        try {
+            app = initializeApp(firebaseConfig);
+            database = getDatabase(app);
+            console.log('Firebase initialized successfully');
+        } catch (error) {
+            console.error('Firebase initialization error:', error);
+            showMessage('loginMessage', 'Firebase configuration error. Please check your setup.', 'error');
+        }
+
+        let currentStudent = null;
+        const TOTAL_CAPITAL = 10; // in Crores
+
+        // Business ideas - update these with your actual business ideas
+        const businessIdeas = [
+            { id: 1, name: "Business Idea 1", team: "Team Alpha" },
+            { id: 2, name: "Business Idea 2", team: "Team Beta" },
+            { id: 3, name: "Business Idea 3", team: "Team Gamma" },
+            { id: 4, name: "Business Idea 4", team: "Team Delta" },
+            { id: 5, name: "Business Idea 5", team: "Team Epsilon" },
+            { id: 6, name: "Business Idea 6", team: "Team Zeta" },
+            { id: 7, name: "Business Idea 7", team: "Team Eta" },
+            { id: 8, name: "Business Idea 8", team: "Team Theta" },
+            { id: 9, name: "Business Idea 9", team: "Team Iota" },
+            { id: 10, name: "Business Idea 10", team: "Team Kappa" }
+        ];
+
+        // Populate business ideas dropdown
+        const businessSelect = document.getElementById('businessIdea');
+        businessIdeas.forEach(idea => {
+            const option = document.createElement('option');
+            option.value = idea.id;
+            option.textContent = `${idea.name} - ${idea.team}`;
+            businessSelect.appendChild(option);
+        });
+
+        // Login handling
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const studentId = document.getElementById('studentId').value.trim().toUpperCase();
+            const loginBtn = document.getElementById('loginBtn');
+            
+            if (!studentId) {
+                showMessage('loginMessage', 'Please enter your student ID', 'error');
+                return;
+            }
+
+            // Check if Firebase is initialized
+            if (!database) {
+                showMessage('loginMessage', 'System not ready. Please check Firebase configuration.', 'error');
+                return;
+            }
+
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Logging in...';
+
+            try {
+                // Check if voting is active
+                const votingStatusRef = ref(database, 'votingStatus/active');
+                const statusSnapshot = await get(votingStatusRef);
+                
+                if (!statusSnapshot.exists()) {
+                    // Initialize voting status if it doesn't exist
+                    await set(votingStatusRef, true);
+                    console.log('Voting status initialized');
+                }
+                
+                if (statusSnapshot.exists() && !statusSnapshot.val()) {
+                    showMessage('loginMessage', 'Voting is currently closed. Please contact the admin.', 'error');
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Enter Voting Arena';
+                    return;
+                }
+
+                // Check if student already exists
+                const studentRef = ref(database, `students/${studentId}`);
+                const snapshot = await get(studentRef);
+
+                if (!snapshot.exists()) {
+                    // Create new student record
+                    await set(studentRef, {
+                        id: studentId,
+                        totalCapital: TOTAL_CAPITAL,
+                        remainingBalance: TOTAL_CAPITAL,
+                        investments: {},
+                        lastUpdated: Date.now()
+                    });
+                    console.log('New student created:', studentId);
+                }
+
+                currentStudent = studentId;
+                localStorage.setItem('currentStudent', studentId);
+                showVotingScreen();
+                loadStudentData();
+                showMessage('messageContainer', 'Welcome! You can now start investing.', 'success');
+
+            } catch (error) {
+                console.error('Login error:', error);
+                let errorMessage = 'Login failed. ';
+                
+                if (error.code === 'PERMISSION_DENIED') {
+                    errorMessage += 'Database access denied. Please check Firebase rules.';
+                } else if (error.message.includes('fetch')) {
+                    errorMessage += 'Network error. Please check your internet connection.';
+                } else if (error.message.includes('apiKey')) {
+                    errorMessage += 'Invalid Firebase configuration. Please update your credentials.';
+                } else {
+                    errorMessage += error.message || 'Please try again.';
+                }
+                
+                showMessage('loginMessage', errorMessage, 'error');
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Enter Voting Arena';
+            }
+        });
+
+        // Investment form handling
+        document.getElementById('investmentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const businessId = document.getElementById('businessIdea').value;
+            const amount = parseFloat(document.getElementById('investmentAmount').value);
+            const investBtn = document.getElementById('investBtn');
+
+            if (!businessId || !amount || amount <= 0) {
+                showMessage('messageContainer', 'Please select a business idea and enter a valid amount', 'error');
+                return;
+            }
+
+            investBtn.disabled = true;
+            investBtn.textContent = 'Processing...';
+
+            try {
+                const studentRef = ref(database, `students/${currentStudent}`);
+                const snapshot = await get(studentRef);
+                const studentData = snapshot.val();
+
+                if (amount > studentData.remainingBalance) {
+                    showMessage('messageContainer', `Insufficient balance. Available: ₹${studentData.remainingBalance} Cr`, 'error');
+                    investBtn.disabled = false;
+                    investBtn.textContent = 'Invest Now';
+                    return;
+                }
+
+                // Update student investments
+                const investmentId = Date.now();
+                const updates = {};
+                updates[`students/${currentStudent}/investments/${investmentId}`] = {
+                    businessId: businessId,
+                    amount: amount,
+                    timestamp: Date.now()
+                };
+                updates[`students/${currentStudent}/remainingBalance`] = studentData.remainingBalance - amount;
+                updates[`students/${currentStudent}/lastUpdated`] = Date.now();
+
+                // Update business idea total
+                const businessRef = ref(database, `businessIdeas/${businessId}/totalInvestment`);
+                const businessSnapshot = await get(businessRef);
+                const currentTotal = businessSnapshot.exists() ? businessSnapshot.val() : 0;
+                updates[`businessIdeas/${businessId}/totalInvestment`] = currentTotal + amount;
+                updates[`businessIdeas/${businessId}/name`] = businessIdeas.find(b => b.id == businessId).name;
+                updates[`businessIdeas/${businessId}/team`] = businessIdeas.find(b => b.id == businessId).team;
+                updates[`businessIdeas/${businessId}/lastUpdated`] = Date.now();
+
+                await update(ref(database), updates);
+
+                showMessage('messageContainer', `Successfully invested ₹${amount} Cr!`, 'success');
+                document.getElementById('investmentForm').reset();
+
+            } catch (error) {
+                console.error('Investment error:', error);
+                showMessage('messageContainer', 'Investment failed. Please try again.', 'error');
+            } finally {
+                investBtn.disabled = false;
+                investBtn.textContent = 'Invest Now';
+            }
+        });
+
+        // Load student data and listen for updates
+        function loadStudentData() {
+            const studentRef = ref(database, `students/${currentStudent}`);
+            
+            onValue(studentRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    updateUI(data);
+                }
+            });
+        }
+
+        function updateUI(studentData) {
+            document.getElementById('remainingBalance').textContent = `₹${studentData.remainingBalance.toFixed(2)} Cr`;
+            
+            const investmentsList = document.getElementById('investmentsList');
+            investmentsList.innerHTML = '';
+
+            if (studentData.investments && Object.keys(studentData.investments).length > 0) {
+                Object.entries(studentData.investments).forEach(([key, investment]) => {
+                    const idea = businessIdeas.find(b => b.id == investment.businessId);
+                    const item = document.createElement('div');
+                    item.className = 'investment-item';
+                    item.innerHTML = `
+                        <div>
+                            <div class="idea-name">${idea.name}</div>
+                            <div style="font-size: 12px; color: var(--text-secondary);">${idea.team}</div>
+                        </div>
+                        <div class="amount">₹${investment.amount.toFixed(2)} Cr</div>
+                    `;
+                    investmentsList.appendChild(item);
+                });
+            } else {
+                investmentsList.innerHTML = '<div class="empty-state">No investments yet. Start investing!</div>';
+            }
+        }
+
+        function showVotingScreen() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('votingScreen').classList.add('active');
+            document.getElementById('displayStudentId').textContent = currentStudent;
+        }
+
+        function showMessage(containerId, message, type) {
+            const container = document.getElementById(containerId);
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = message;
+            container.innerHTML = '';
+            container.appendChild(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 5000);
+        }
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            currentStudent = null;
+            localStorage.removeItem('currentStudent');
+            document.getElementById('votingScreen').classList.remove('active');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('loginForm').reset();
+        });
+
+        // Auto-login if student ID exists in localStorage
+        window.addEventListener('load', async () => {
+            const savedStudent = localStorage.getItem('currentStudent');
+            if (savedStudent && database) {
+                try {
+                    const votingStatusRef = ref(database, 'votingStatus/active');
+                    const statusSnapshot = await get(votingStatusRef);
+                    
+                    // Auto-initialize voting if not set
+                    if (!statusSnapshot.exists()) {
+                        await set(votingStatusRef, true);
+                    }
+                    
+                    if (statusSnapshot.exists() && statusSnapshot.val()) {
+                        currentStudent = savedStudent;
+                        showVotingScreen();
+                        loadStudentData();
+                    } else {
+                        // Voting is closed, clear saved session
+                        localStorage.removeItem('currentStudent');
+                    }
+                } catch (error) {
+                    console.error('Auto-login error:', error);
+                    // If auto-login fails, just show the login screen
+                    localStorage.removeItem('currentStudent');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
